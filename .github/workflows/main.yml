@@ -1,0 +1,51 @@
+name: Deploy to Firebase App Distribution
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: Android-Prod
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          
+      - name: Create secrets
+        working-directory: android
+        run: |
+          mkdir -p app/src/prod/
+          mkdir -p fastlane/service_account/
+          echo "$GOOGLE_SERVICES_JSON" | base64 -d > app/google-services.json
+          echo "$SERVICE_ACCOUNT_JSON_PROD" | base64 -d > fastlane/service_account/test-project-d9d3e-1ef79b14b4f6.json
+          echo "$KEYSTORE" | base64 -d > key_prod.jks
+          echo "$KEY_PROPERTIES" | base64 -d > app/src/prod/key.properties
+        env:
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+          SERVICE_ACCOUNT_JSON_PROD: ${{ secrets.SERVICE_ACCOUNT_JSON_PROD }}
+          KEYSTORE: ${{ secrets.KEYSTORE }}
+          KEY_PROPERTIES: ${{ secrets.KEY_PROPERTIES }}
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.29.2"
+
+      - name: Install dependencies
+        run: |
+          flutter pub get
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.4.1
+          working-directory: android
+          bundler-cache: true
+
+      - name: Deploy to Firebase app distribution
+        working-directory: android
+
+        run: bundle exec fastlane distribute_to_firebase
+        env:
+          FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
+          TESTER_GROUP: ${{ secrets.TESTER_GROUPS }}
