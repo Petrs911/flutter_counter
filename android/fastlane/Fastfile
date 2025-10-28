@@ -1,0 +1,76 @@
+require_relative '../../fastlane/Fasthelper'
+
+default_platform(:android)
+
+def validate_distribution_files(apk_path:, service_credentials_file:)
+  SharedFastlane.validate_file_exists(
+    file_path: apk_path,
+    file_name: 'APK file'
+  )
+  SharedFastlane.validate_file_exists(
+    file_path: service_credentials_file,
+    file_name: 'Firebase service account credentials file'
+  )
+end
+
+def distribute_to_firebase(app_id:, flavor:, tester_groups:, service_account_path:)
+  apk_path = SharedFastlane.get_apk_path(flavor: flavor, fastfile_dir: __dir__)
+  service_account_path = File.expand_path(service_account_path, __dir__)
+
+  validate_distribution_files(
+    apk_path: apk_path,
+    service_credentials_file: service_account_path
+  )
+  firebase_app_distribution(
+    app: app_id,
+    apk_path: apk_path,
+    groups: tester_groups,
+    service_credentials_file: service_account_path
+  )
+end
+
+platform :android do
+  desc 'Clean project'
+  lane :flutter_clean do
+    UI.message('Cleaning Flutter project...')
+    sh 'flutter clean'
+    UI.success('Flutter project cleaned successfully! 🎉')
+  end
+
+  desc 'Build release AAB'
+  lane :build_release_aab do
+    flutter_clean
+
+    UI.message('Building release AAB...')
+    sh 'flutter build appbundle --release'
+
+    UI.success('Release AAB built successfully 🎉')
+  end
+
+  desc 'Build release APK'
+  lane :build_release_apk do
+    flutter_clean
+
+    UI.message('Building release APK...')
+    sh 'flutter build apk --release'
+
+    UI.success('Release APK built successfully 🎉')
+  end
+
+  desc 'Upload to Firebase App Distribution'
+  lane :distribute_to_firebase do
+    flutter_clean
+    build_release_apk
+
+    UI.message('Uploading APK to Firebase App Distribution...')
+
+    distribute_to_firebase(
+      flavor: nil,
+      app_id: ENV.fetch('FIREBASE_APP_ID'),
+      tester_groups: ENV.fetch('TESTER_GROUP', nil),
+      service_account_path: 'service_account/test-project-d9d3e-1ef79b14b4f6.json'
+    )
+
+    UI.success('APK uploaded to Firebase App Distribution successfully 🎉')
+  end
+end
