@@ -27,9 +27,14 @@ jobs:
           flutter-version: "3.29.2"
           cache: true
 
-      - name: Install dependencies
+      - name: Install flutter dependencies
         run: |
           flutter pub get
+
+      - name: Install CocoaPods dependencies
+        working-directory: ios
+        run: |
+          pod install
           
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
