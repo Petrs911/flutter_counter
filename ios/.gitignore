@@ -32,3 +32,9 @@ Runner/GeneratedPluginRegistrant.*
 !default.mode2v3
 !default.pbxuser
 !default.perspectivev3
+
+/fastlane/.env
+/fastlane/.env.*
+/fastlane/service_account/*
+/fastlane/report.xml
+/build/*

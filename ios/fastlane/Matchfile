@@ -1,0 +1,3 @@
+git_url('https://github.com/Petrs911/flutter_counter_ios_certs')
+storage_mode('git')
+type('development')
