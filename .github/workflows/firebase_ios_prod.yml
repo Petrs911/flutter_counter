@@ -1,0 +1,55 @@
+name: "[iOS-Prod] Deploy to Firebase App Distribution"
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: macos-latest
+    environment: iOS-Prod
+    steps: 
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Create Secrets
+        working-directory: fastlane
+        run: |
+          mkdir -p service_account
+          echo "$SERVICE_ACCOUNT_JSON_PROD" | base64 -d > service_account/${SERVICE_ACCOUNT_JSON_NAME_PROD}.json
+        env:
+          SERVICE_ACCOUNT_JSON_PROD: ${{ secrets.SERVICE_ACCOUNT_JSON_PROD }}
+          SERVICE_ACCOUNT_JSON_NAME_PROD: ${{ secrets.SERVICE_ACCOUNT_JSON_NAME_PROD }}
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.29.2"
+          cache: true
+
+      - name: Install dependencies
+        run: |
+          flutter pub get
+          
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.4.1
+          working-directory: ios
+          bundler-cache: true
+
+      - name: Deploy to Firebase app distribution
+        working-directory: ios
+        run: bundle exec fastlane distribute_to_firebase
+        env:
+          APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+          APP_STORE_CONNECT_API_KEY_CONTENT: ${{ secrets.APP_STORE_CONNECT_API_KEY_CONTENT }}
+          BUNDLE_ID: ${{ secrets.BUNDLE_ID }}
+          FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
+          TESTER_GROUP: ${{ secrets.TESTER_GROUP }}
+          SERVICE_ACCOUNT_NAME: ${{ secrets.SERVICE_ACCOUNT_JSON_NAME_PROD }}
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+          MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
+          
+    
