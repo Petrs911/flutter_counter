@@ -46,4 +46,5 @@ app.*.map.json
 
 /fastlane/report.xml
 /fastlane/.env
+/fastlane/.env.*
 /fastlane/service_account/*

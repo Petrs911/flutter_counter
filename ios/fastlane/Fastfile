@@ -1,7 +1,13 @@
 require_relative '../../fastlane/Fasthelper'
 require 'dotenv'
 
-Dotenv.load('../../fastlane/.env')
+env_file = '../../fastlane/.env'
+if File.exist?(env_file)
+  Dotenv.load(env_file)
+  UI.message('Loaded common .env configuration')
+else
+  UI.message('No common .env file found, skipping...')
+end
 
 default_platform(:ios)
 
@@ -19,11 +25,25 @@ def upload_to_firebase_distribution(app_id:, tester_groups:, service_account_nam
   )
 end
 
-def apply_flavor_config(flavor)
+def maybe_apply_flavor_config(flavor)
   env_file = File.join(__dir__, ".env.#{flavor}")
-  UI.user_error!("Environment file not found: #{env_file}") unless File.exist?(env_file)
-  Dotenv.overload(env_file)
-  UI.message("Loaded configuration for flavor: #{flavor}")
+  if File.exist?(env_file)
+    Dotenv.overload(env_file)
+    UI.message("Loaded configuration for flavor: #{flavor}")
+  else
+    UI.message("No environment file found for flavor: #{flavor}, skipping...")
+  end
+end
+
+def maybe_apply_common_flavor_config(flavor)
+  project_root = SharedFastlane.project_root(fastfile_dir: __dir__)
+  common_env_file = File.join(project_root, 'fastlane', ".env.#{flavor}")
+  if File.exist?(common_env_file)
+    Dotenv.overload(common_env_file)
+    UI.message("Loaded common configuration for flavor: #{flavor}")
+  else
+    UI.message("No common environment file found for flavor: #{flavor}, skipping...")
+  end
 end
 
 platform :ios do
@@ -43,7 +63,8 @@ platform :ios do
 
   lane :distribute_to_firebase do |options|
     flavor = options[:flavor] || 'dev'
-    apply_flavor_config(flavor)
+    maybe_apply_flavor_config(flavor)
+    maybe_apply_common_flavor_config(flavor)
 
     setup_ci
 
