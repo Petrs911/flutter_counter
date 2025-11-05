@@ -47,7 +47,7 @@ jobs:
           APP_STORE_CONNECT_API_KEY_CONTENT: ${{ secrets.APP_STORE_CONNECT_API_KEY_CONTENT }}
           BUNDLE_ID: ${{ secrets.BUNDLE_ID }}
           FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
-          TESTER_GROUP: ${{ secrets.TESTER_GROUP }}
+          TESTER_GROUP: ${{ secrets.TESTER_GROUPS }}
           SERVICE_ACCOUNT_NAME: ${{ secrets.SERVICE_ACCOUNT_JSON_NAME_PROD }}
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
           MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
