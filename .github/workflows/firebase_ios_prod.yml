@@ -21,6 +21,14 @@ jobs:
           SERVICE_ACCOUNT_JSON_PROD: ${{ secrets.SERVICE_ACCOUNT_JSON_PROD }}
           SERVICE_ACCOUNT_JSON_NAME_PROD: ${{ secrets.SERVICE_ACCOUNT_JSON_NAME_PROD }}
 
+      - name: Create iOS Fastlane Secrets
+        working-directory: ios/fastlane
+        run: |
+          echo "$APP_STORE_CONNECT_API_KEY_CONTENT" | base64 -d > AuthKey.p8
+          chmod 600 AuthKey.p8
+        env:
+          APP_STORE_CONNECT_API_KEY_CONTENT: ${{ secrets.APP_STORE_CONNECT_API_KEY_CONTENT }}
+
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
@@ -44,7 +52,6 @@ jobs:
         env:
           APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
           APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
-          APP_STORE_CONNECT_API_KEY_CONTENT: ${{ secrets.APP_STORE_CONNECT_API_KEY_CONTENT }}
           BUNDLE_ID: ${{ secrets.BUNDLE_ID }}
           FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
           TESTER_GROUP: ${{ secrets.TESTER_GROUPS }}
