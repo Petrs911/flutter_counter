@@ -38,28 +38,6 @@ jobs:
           working-directory: ios
           bundler-cache: true
 
-      - name: Install specific Bundler version
-        run: |
-          gem install bundler -v 2.3.7
-
-      - name: Bundle install for iOS Gemfile
-        run: |
-          cd ./ios
-          bundle _2.3.7_ install
-
-      - name: Cache CocoaPods
-        uses: actions/cache@v4
-        with:
-          path: ios/Pods
-          key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-pods-
-
-      - name: Install CocoaPods dependencies
-        working-directory: ios
-        run: |
-          pod install
-
       - name: Deploy to Firebase app distribution
         working-directory: ios
         run: bundle exec fastlane distribute_to_firebase
