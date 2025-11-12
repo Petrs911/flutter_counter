@@ -31,17 +31,17 @@ jobs:
         run: |
           flutter pub get
 
-      - name: Install CocoaPods dependencies
-        working-directory: ios
-        run: |
-          pod install
-          
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: 3.4.1
           working-directory: ios
           bundler-cache: true
+
+      - name: Install CocoaPods dependencies
+        working-directory: ios
+        run: |
+          pod install
 
       - name: Deploy to Firebase app distribution
         working-directory: ios
