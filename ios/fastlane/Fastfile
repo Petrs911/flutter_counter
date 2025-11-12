@@ -57,6 +57,8 @@ platform :ios do
     flutter_clean
 
     UI.message('Building iOS release without code signing...')
+    sh('flutter pub get')
+    sh('bundle exec pod install')
     sh 'flutter build ios --release --no-codesign'
     UI.success('iOS release built successfully without code signing! 🎉')
   end
