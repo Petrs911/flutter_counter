@@ -21,7 +21,7 @@ jobs:
           SERVICE_ACCOUNT_JSON_PROD: ${{ secrets.SERVICE_ACCOUNT_JSON_PROD }}
           SERVICE_ACCOUNT_JSON_NAME_PROD: ${{ secrets.SERVICE_ACCOUNT_JSON_NAME_PROD }}
 
-      - name: Setup Flutter
+      - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: "3.29.2"
@@ -37,6 +37,23 @@ jobs:
           ruby-version: 3.4.1
           working-directory: ios
           bundler-cache: true
+
+      - name: Install specific Bundler version
+        run: |
+          gem install bundler -v 2.3.7
+
+      - name: Bundle install for iOS Gemfile
+        run: |
+          cd ./ios
+          bundle _2.3.7_ install
+
+      - name: Cache CocoaPods
+        uses: actions/cache@v2
+        with:
+          path: ios/Pods
+          key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pods-
 
       - name: Install CocoaPods dependencies
         working-directory: ios
