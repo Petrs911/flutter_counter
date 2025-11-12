@@ -38,4 +38,5 @@ Runner/GeneratedPluginRegistrant.*
 /fastlane/service_account/*
 /fastlane/report.xml
 /fastlane/build/*
+/fastlane/AuthKey*.p8
 /build/*
