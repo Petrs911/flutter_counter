@@ -87,8 +87,8 @@ platform :ios do
 
     if is_ci?
       unlock_keychain(
-        path: ENV('MATCH_KEYCHAIN_NAME'),
-        password: ENV('MATCH_KEYCHAIN_PASSWORD')
+        path: ENV.fetch('MATCH_KEYCHAIN_NAME', nil),
+        password: ENV.fetch('MATCH_KEYCHAIN_PASSWORD', nil)
       )
     end
 
