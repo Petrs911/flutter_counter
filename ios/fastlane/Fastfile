@@ -92,6 +92,17 @@ platform :ios do
       )
     end
 
+    if is_ci?
+      update_code_signing_settings(
+        use_automatic_signing: false,
+        path: 'Runner.xcodeproj',
+        team_id: ENV.fetch('APPLE_DEVELOPER_TEAM_ID'),
+        bundle_identifier: ENV.fetch('BUNDLE_ID'),
+        profile_name: "match AdHoc #{ENV.fetch('BUNDLE_ID')}",
+        code_sign_identity: 'Apple Distribution'
+      )
+    end
+
     build_app(
       scheme: 'Runner',
       export_method: 'ad-hoc',
