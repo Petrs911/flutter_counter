@@ -58,5 +58,6 @@ jobs:
           SERVICE_ACCOUNT_NAME: ${{ secrets.SERVICE_ACCOUNT_JSON_NAME_PROD }}
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
           MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
+          APPLE_DEVELOPER_TEAM_ID: ${{ secrets.APPLE_DEVELOPER_TEAM_ID }}
           
     
